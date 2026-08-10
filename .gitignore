@@ -1,0 +1,35 @@
+# --- .NET / Visual Studio ---
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.userosscache
+*.sln.docuser
+.vs/
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docuser
+appsettings.Development.json
+
+# --- Angular / Node ---
+node_modules/
+/dist/
+/.angular/
+/.vscode/
+.DS_Store
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/tmp/
+/out-tsc/
+/bazel-out/
+
+# --- Operating System ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
