@@ -1,13 +1,13 @@
-﻿using AssetManagement.Domain.Entities;
+﻿using AssetManagement.Application.Interfaces;
+using AssetManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace AssetManagement.Infrastructure.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext : DbContext, IApplicationDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    // These represent your Database Tables
     public DbSet<Asset> Assets { get; set; }
     public DbSet<OrganizationUnit> OrganizationUnits { get; set; }
     public DbSet<Category> Categories { get; set; }
@@ -16,15 +16,21 @@ public class AppDbContext : DbContext
     public DbSet<AssetDocument> AssetDocuments { get; set; }
     public DbSet<AssetHistory> AssetHistories { get; set; }
 
+    // This method is required by the IApplicationDbContext interface
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // This handles the Organization Hierarchy (Tree)
+        // Configure Hierarchy
         modelBuilder.Entity<OrganizationUnit>()
             .HasOne(u => u.ParentUnit)
             .WithMany(u => u.ChildUnits)
             .HasForeignKey(u => u.ParentUnitId)
-            .OnDelete(DeleteBehavior.Restrict); // Prevents accidental deletion of a whole branch
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

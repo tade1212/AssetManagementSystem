@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AssetManagement.Application\AssetManagement.Application.csproj" />
+    <ProjectReference Include="..\AssetManagement.Domain\AssetManagement.Domain.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
