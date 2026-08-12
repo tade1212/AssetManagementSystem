@@ -1,12 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { OrganizationService } from '../core/services/organization';
 
-interface FoodNode {
+import { OrganizationService } from '../core/services/organization';
+import { AssetService } from '../core/services/asset';
+
+interface OrganizationNode {
   id: number;
   name: string;
-  children?: FoodNode[];
+  children?: OrganizationNode[];
+}
+
+interface Asset {
+  assetTag: string;
+  name: string;
+  categoryName: string;
+  organizationUnitName: string;
+  status: string;
 }
 
 @Component({
@@ -16,30 +26,92 @@ interface FoodNode {
   styleUrl: './home.scss',
 })
 export class HomeComponent implements OnInit {
-  userName: string | null = '';
+  // ==============================
+  // Properties
+  // ==============================
 
-  // Tree Control Logic
-  treeControl = new NestedTreeControl<any>((node) => node.children);
-  dataSource = new MatTreeNestedDataSource<any>();
+  userName: string | null = null;
 
-  constructor(private orgService: OrganizationService) {
+  assets: Asset[] = [];
+
+  displayedColumns: string[] = [
+    'assetTag',
+    'name',
+    'categoryName',
+    'organizationUnitName',
+    'status',
+  ];
+
+  // ==============================
+  // Organization Tree
+  // ==============================
+
+  treeControl = new NestedTreeControl<OrganizationNode>((node) => node.children);
+
+  dataSource = new MatTreeNestedDataSource<OrganizationNode>();
+
+  // ==============================
+  // Constructor
+  // ==============================
+
+  constructor(
+    private orgService: OrganizationService,
+    private assetService: AssetService,
+  ) {
     this.userName = localStorage.getItem('fullName');
   }
 
-  hasChild = (_: number, node: any) => !!node.children && node.children.length > 0;
+  // ==============================
+  // Component Initialization
+  // ==============================
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadTree();
+    this.loadAssets();
   }
 
-  loadTree() {
-    this.orgService.getHierarchy().subscribe((data) => {
-      this.dataSource.data = data;
+  // ==============================
+  // Tree
+  // ==============================
+
+  hasChild(_index: number, node: OrganizationNode): boolean {
+    return !!node.children && node.children.length > 0;
+  }
+
+  loadTree(): void {
+    this.orgService.getHierarchy().subscribe({
+      next: (data) => {
+        this.dataSource.data = data;
+      },
+
+      error: (error) => {
+        console.error('Failed to load organization hierarchy:', error);
+      },
     });
   }
 
-  onLogout() {
+  // ==============================
+  // Assets
+  // ==============================
+
+  loadAssets(): void {
+    this.assetService.getAssets().subscribe({
+      next: (data) => {
+        this.assets = data;
+      },
+
+      error: (error) => {
+        console.error('Failed to load assets:', error);
+      },
+    });
+  }
+
+  // ==============================
+  // Logout
+  // ==============================
+
+  onLogout(): void {
     localStorage.clear();
-    window.location.reload(); // Simple way to go back to login
+    window.location.reload();
   }
 }

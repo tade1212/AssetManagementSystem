@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatTableModule } from '@angular/material/table';
 
 // Material Imports
 import { MatCardModule } from '@angular/material/card';
@@ -33,6 +34,7 @@ import { HomeComponent } from './home/home';
     MatTreeModule, // ADD THIS
     MatIconModule, // ADD THIS
     CdkTreeModule, // ADD THIS
+    MatTableModule
   ],
   providers: [provideHttpClient(), provideAnimationsAsync()],
   bootstrap: [AppComponent],
