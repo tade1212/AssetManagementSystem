@@ -114,4 +114,11 @@ export class HomeComponent implements OnInit {
     localStorage.clear();
     window.location.reload();
   }
+  deleteAsset(id: number) {
+    if (confirm('Are you sure you want to delete this asset?')) {
+      this.assetService.deleteAsset(id).subscribe(() => {
+        this.loadAssets(); // Refresh the table
+      });
+    }
+  }
 }
