@@ -1,8 +1,342 @@
-.example-tree-invisible {
-  display: none;
+// ================= MASTER LAYOUT =================
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f4f6f9;
 }
 
-.mat-tree-node {
+// ================= HEADER =================
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #3f51b5; // Material Primary Blue
+  color: white;
+  padding: 15px 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    span {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+  }
+
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        opacity: 0.9;
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+
+        span {
+          font-size: 10px;
+          opacity: 0.7;
+        }
+
+        strong {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .logout-button {
+      color: white;
+      border-color: rgba(255, 255, 255, 0.5);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+// ================= WELCOME BANNER =================
+.welcome-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+  margin: 30px 30px 10px 30px;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+  h2 {
+    margin: 0 0 10px 0;
+    color: #1a237e;
+    font-size: 24px;
+  }
+
+  p {
+    margin: 0;
+    color: #5c6bc0;
+    font-size: 14px;
+  }
+
+  .welcome-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #3f51b5;
+    opacity: 0.15;
+  }
+}
+
+// ================= MAIN CONTENT (TWO COLUMNS) =================
+.dashboard-content {
+  display: flex;
+  gap: 30px;
+  padding: 20px 30px 30px 30px;
+  flex: 1;
+
+  .organization-card {
+    flex: 1; // Left side is smaller (1 part)
+    min-width: 320px;
+  }
+
+  .assets-card {
+    flex: 2.5; // Right side is larger (2.5 parts)
+  }
+}
+
+// ================= THE CARDS =================
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h2 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    p {
+      margin: 0;
+      font-size: 12px;
+      color: #777;
+    }
+  }
+}
+
+// ================= TREE VIEW STYLING =================
+.organization-tree {
+  margin-top: 15px;
+  max-height: 500px;
+  overflow-y: auto;
+
+  mat-tree {
+    background: transparent;
+  }
+
+  .mat-tree-node {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 4px 0;
+
+    &:hover {
+      background-color: #f5f5f5;
+      border-radius: 4px;
+    }
+  }
+
+  .node-name {
+    font-size: 14px;
+    color: #444;
+  }
+
+  .folder-icon {
+    margin-right: 8px;
+    color: #fbc02d; // Folder Yellow
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .tree-actions {
+    margin-left: auto; // Pushes buttons to the right
+    display: flex;
+    gap: 4px;
+
+    button {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  .tree-invisible {
+    display: none;
+  }
+}
+
+// ================= TABLE STYLING =================
+.table-container {
+  margin-top: 15px;
+  overflow-x: auto;
+
+  .asset-table {
+    width: 100%;
+    background: transparent;
+
+    th {
+      font-weight: 500;
+      color: #555;
+      font-size: 14px;
+      background-color: #f9f9f9;
+    }
+
+    td {
+      font-size: 14px;
+      color: #333;
+      padding: 12px 16px;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+  }
+}
+
+// ================= STATUS BADGES =================
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.available {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+
+    .status-dot {
+      background-color: #2e7d32;
+    }
+  }
+
+  &.unavailable {
+    background-color: #ffebee;
+    color: #c62828;
+
+    .status-dot {
+      background-color: #c62828;
+    }
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+}
+
+// ================= EMPTY STATES =================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  color: #888;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    color: #555;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.asset-count {
   display: flex;
   align-items: center;
+  gap: 8px;
+  background-color: #e8eaf6;
+  color: #3f51b5;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.header-actions {
+  display: flex;
+  gap: 8px;
 }

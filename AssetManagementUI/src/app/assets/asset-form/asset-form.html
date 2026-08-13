@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>Register New Asset</h2>
+<mat-dialog-content [formGroup]="assetForm" style="display: flex; flex-direction: column; gap: 15px; min-width: 400px; padding-top: 10px;">
+  
+  <mat-form-field appearance="outline">
+    <mat-label>Asset Name</mat-label>
+    <input matInput formControlName="name" placeholder="e.g. Dell Latitude 5420">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Asset Tag / Serial</mat-label>
+    <input matInput formControlName="assetTag" placeholder="e.g. AST-001">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Category</mat-label>
+    <mat-select formControlName="categoryId">
+      <mat-option *ngFor="let cat of categories" [value]="cat.id">{{cat.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Assign to Department</mat-label>
+    <mat-select formControlName="organizationUnitId">
+      <mat-option *ngFor="let dept of departments" [value]="dept.id">
+        {{dept.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Description</mat-label>
+    <textarea matInput formControlName="description"></textarea>
+  </mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="assetForm.invalid">SAVE ASSET</button>
+</mat-dialog-actions>

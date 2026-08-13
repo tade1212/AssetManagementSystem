@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Add New Unit</h2>
+<mat-dialog-content>
+  <p>Adding a sub-unit under: <strong>{{ data.parentName }}</strong></p>
+  
+  <mat-form-field appearance="outline" style="width: 100%; margin-top: 10px;">
+    <mat-label>Unit Name</mat-label>
+    <input matInput [(ngModel)]="unitName" placeholder="e.g. Sales Team" required>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!unitName">
+    CREATE
+  </button>
+</mat-dialog-actions>

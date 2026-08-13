@@ -1,0 +1,24 @@
+<div style="padding: 30px;">
+  <button mat-stroked-button (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon> Back to Dashboard
+  </button>
+
+  <mat-card *ngIf="asset" style="margin-top: 20px; max-width: 600px;">
+    <mat-card-header>
+      <mat-card-title>{{ asset.name }}</mat-card-title>
+      <mat-card-subtitle>Tag: {{ asset.assetTag }}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content style="padding: 20px;">
+      <p><strong>Status:</strong> {{ asset.status }}</p>
+      <p><strong>Category:</strong> {{ asset.categoryName }}</p>
+      <p><strong>Department:</strong> {{ asset.organizationUnitName }}</p>
+      <p><strong>Description:</strong> {{ asset.description || 'No description provided' }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="!asset" style="margin-top: 20px;">
+    <mat-spinner *ngIf="!asset"></mat-spinner>
+    <p>Loading asset details...</p>
+  </div>
+</div>
