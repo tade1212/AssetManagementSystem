@@ -31,7 +31,7 @@ public class OrganizationService : IOrganizationService
         var unit = new OrganizationUnit
         {
             Name = name,
-            ParentUnitId = parentId
+            ParentUnitId = parentId // Ensure this line exists!
         };
 
         _context.OrganizationUnits.Add(unit);
@@ -44,7 +44,6 @@ public class OrganizationService : IOrganizationService
             ParentUnitId = unit.ParentUnitId
         };
     }
-
     private OrganizationUnitDto MapToDto(OrganizationUnit unit, List<OrganizationUnit> allUnits)
     {
         return new OrganizationUnitDto
@@ -57,5 +56,23 @@ public class OrganizationService : IOrganizationService
                 .Select(child => MapToDto(child, allUnits))
                 .ToList()
         };
+    }
+    public async Task<bool> DeleteUnitAsync(int id)
+    {
+        var unit = await _context.OrganizationUnits
+            .Include(u => u.ChildUnits)
+            .Include(u => u.Assets)
+            .FirstOrDefaultAsync(u => u.Id == id);
+
+        if (unit == null) return false;
+
+        // RULE: Cannot delete if it has children or assets
+        if (unit.ChildUnits.Any() || unit.Assets.Any())
+        {
+            throw new Exception("Cannot delete a department that has sub-units or assets assigned to it.");
+        }
+
+        _context.OrganizationUnits.Remove(unit);
+        return await _context.SaveChangesAsync() > 0;
     }
 }

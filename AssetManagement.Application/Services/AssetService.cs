@@ -35,7 +35,46 @@ public class AssetService : IAssetService
                 CreatedAt = a.CreatedAt
             }).ToListAsync();
     }
+    public async Task<AssetDto?> GetAssetByIdAsync(int id)
+    {
+        var asset = await _context.Assets
+            .Include(a => a.Category)
+            .Include(a => a.OrganizationUnit)
+            .Include(a => a.Documents) // Tell SQL to get the files
+            .FirstOrDefaultAsync(a => a.Id == id);
 
+        if (asset == null) return null;
+
+        return new AssetDto
+        {
+            Id = asset.Id,
+            Name = asset.Name,
+            AssetTag = asset.AssetTag,
+            Description = asset.Description,
+            Status = asset.Status,
+            CategoryName = asset.Category?.Name ?? "N/A",
+            OrganizationUnitName = asset.OrganizationUnit?.Name ?? "N/A",
+            CreatedAt = asset.CreatedAt,
+
+            // ADD THIS BLOCK: Map the database documents to the DTO
+            AssetDocuments = asset.Documents.Select(d => new AssetDocumentDto
+            {
+                Id = d.Id,
+                FileName = d.FileName,
+                FilePath = d.FilePath,
+                DocumentType = d.DocumentType,
+                UploadedAt = d.UploadedAt
+            }).ToList()
+        };
+    }
+    public async Task<bool> DeleteAssetAsync(int id)
+    {
+        var asset = await _context.Assets.FindAsync(id);
+        if (asset == null) return false;
+
+        _context.Assets.Remove(asset);
+        return await _context.SaveChangesAsync() > 0;
+    }
     public async Task<AssetDto> CreateAssetAsync(string name, string tag, string description, int categoryId, int orgUnitId)
     {
         var asset = new Asset
@@ -61,6 +100,21 @@ public class AssetService : IAssetService
             Status = asset.Status
         };
     }
+    public async Task<bool> UpdateAssetAsync(int id, AssetDto assetDto)
+    {
+        var asset = await _context.Assets.FindAsync(id);
+        if (asset == null) return false;
+
+        // Update the properties
+        asset.Name = assetDto.Name;
+        asset.AssetTag = assetDto.AssetTag;
+        asset.Description = assetDto.Description;
+        asset.Status = assetDto.Status; // Now we handle Status
+        asset.CategoryId = assetDto.CategoryId;
+        asset.OrganizationUnitId = assetDto.OrganizationUnitId;
+
+        return await _context.SaveChangesAsync() > 0;
+    }
     public async Task<AssetDocumentDto> UploadDocumentAsync(int assetId, IFormFile file, string documentType)
     {
         // 1. Validation
@@ -75,7 +129,8 @@ public class AssetService : IAssetService
         // 2. STABLE PATH LOGIC
         // This creates the folder inside the API project's directory
         string rootPath = AppContext.BaseDirectory;
-        var uploadsFolder = Path.Combine(rootPath, "wwwroot", "Uploads");
+        //var uploadsFolder = Path.Combine(rootPath, "wwwroot", "Uploads");
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads");
 
         if (!Directory.Exists(uploadsFolder))
         {

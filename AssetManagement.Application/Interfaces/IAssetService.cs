@@ -13,4 +13,8 @@ public interface IAssetService
 
     // NEW METHOD FOR UPLOADS
     Task<AssetDocumentDto> UploadDocumentAsync(int assetId, IFormFile file, string documentType);
+    Task<bool> DeleteAssetAsync(int id);
+    Task<AssetDto?> GetAssetByIdAsync(int id);
+    Task<bool> UpdateAssetAsync(int id, AssetDto assetDto);
+
 }
