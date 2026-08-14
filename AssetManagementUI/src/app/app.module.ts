@@ -17,15 +17,17 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+// Components
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { HomeComponent } from './home/home';
 import { OrganizationForm } from './organization/organization-form/organization-form';
-import { AssetForm } from './assets/asset-form/asset-form'; // Ensure this exists
+import { AssetForm } from './assets/asset-form/asset-form';
 import { AssetDetailsComponent } from './assets/asset-details/asset-details';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CategoryManagerComponent } from './assets/category-manager/category-manager'; // Added
 
 @NgModule({
   declarations: [
@@ -33,8 +35,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     LoginComponent,
     HomeComponent,
     OrganizationForm,
-    AssetForm, // ADD THIS HERE
+    AssetForm,
     AssetDetailsComponent,
+    CategoryManagerComponent, // Registered
   ],
   imports: [
     BrowserModule,
@@ -52,7 +55,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatTableModule,
     MatDividerModule,
     MatDialogModule,
-    MatSelectModule, // Required for mat-select
+    MatSelectModule,
     MatProgressSpinnerModule,
   ],
   providers: [provideHttpClient(), provideAnimationsAsync()],

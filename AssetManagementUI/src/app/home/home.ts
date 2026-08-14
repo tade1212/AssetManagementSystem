@@ -2,13 +2,18 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router'; // ADD THIS
+import { Router } from '@angular/router';
 
+// Services
 import { OrganizationService } from '../core/services/organization';
 import { AssetService } from '../core/services/asset';
 import { CategoryService } from '../core/services/category';
+
+// Components
 import { OrganizationForm } from '../organization/organization-form/organization-form';
 import { AssetForm } from '../assets/asset-form/asset-form';
+import { CategoryManagerComponent } from '../assets/category-manager/category-manager';
+
 interface OrganizationNode {
   id: number;
   name: string;
@@ -40,6 +45,7 @@ export class HomeComponent implements OnInit {
     'status',
     'actions',
   ];
+
   treeControl = new NestedTreeControl<OrganizationNode>((node) => node.children);
   dataSource = new MatTreeNestedDataSource<OrganizationNode>();
 
@@ -49,7 +55,7 @@ export class HomeComponent implements OnInit {
     private categoryService: CategoryService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
-    private router: Router, // ADDED ROUTER HERE
+    private router: Router,
   ) {
     this.userName = localStorage.getItem('fullName');
   }
@@ -65,7 +71,7 @@ export class HomeComponent implements OnInit {
     this.orgService.getHierarchy().subscribe({
       next: (data) => {
         this.dataSource.data = data;
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); // Fix for UI timing
       },
       error: (error) => console.error('Tree load error:', error),
     });
@@ -75,10 +81,9 @@ export class HomeComponent implements OnInit {
     this.assetService.getAssets().subscribe({
       next: (data) => {
         this.assets = data;
-        // This tells Angular: "I know the asset count changed, please update the UI now."
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); // Fix for UI timing
       },
-      error: (error) => console.error('Failed to load assets:', error),
+      error: (error) => console.error('Asset load error:', error),
     });
   }
 
@@ -87,6 +92,7 @@ export class HomeComponent implements OnInit {
       width: '400px',
       data: { parentName: node.name },
     });
+
     dialogRef.afterClosed().subscribe((newName) => {
       if (newName && node) {
         this.orgService.createUnitAsync(newName, node.id).subscribe(() => {
@@ -97,58 +103,39 @@ export class HomeComponent implements OnInit {
   }
 
   viewAsset(id: number) {
-    this.router.navigate(['/assets', id]); // Now this will work!
+    this.router.navigate(['/assets', id]);
   }
 
   deleteAsset(id: number) {
-    if (confirm('Delete this asset?')) {
+    if (confirm('Are you sure you want to delete this asset?')) {
       this.assetService.deleteAsset(id).subscribe(() => this.loadAssets());
     }
   }
 
+  deleteUnit(id: number) {
+    if (confirm('Delete this department? This will fail if it has assets.')) {
+      this.orgService.deleteUnit(id).subscribe({
+        next: () => this.loadTree(),
+        error: (err) => alert('Cannot delete: Unit is not empty.'),
+      });
+    }
+  }
+
   manageCategories() {
-    const name = prompt('New Category:');
-    if (name) this.categoryService.createCategory(name).subscribe(() => alert('Added!'));
+    this.dialog.open(CategoryManagerComponent, { width: '500px' });
+  }
+
+  openAddAssetForm() {
+    const dialogRef = this.dialog.open(AssetForm, { width: '500px' });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.assetService.createAsset(result).subscribe(() => this.loadAssets());
+      }
+    });
   }
 
   onLogout(): void {
     localStorage.clear();
-    window.location.reload();
-  }
-
-  openAddAssetForm() {
-    // Open the professional AssetForm component we built
-    const dialogRef = this.dialog.open(AssetForm, {
-      width: '500px',
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // 'result' contains the form data (name, tag, categoryId, etc.)
-        this.assetService.createAsset(result).subscribe({
-          next: () => {
-            this.loadAssets(); // Refresh the table so the new laptop appears!
-          },
-          error: (err) => console.error('Error creating asset:', err),
-        });
-      }
-    });
-  }
-  deleteUnit(id: number) {
-    if (
-      confirm(
-        'Are you sure you want to delete this department? This will fail if it contains assets.',
-      )
-    ) {
-      this.orgService.deleteUnit(id).subscribe({
-        next: () => {
-          this.loadTree(); // Refresh the tree
-        },
-        error: (err) => {
-          alert('Cannot delete: This department might have sub-units or assets assigned to it.');
-          console.error(err);
-        },
-      });
-    }
+    this.router.navigate(['/login']);
   }
 }

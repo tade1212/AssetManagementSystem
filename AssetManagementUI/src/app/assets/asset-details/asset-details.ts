@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 1. Added ChangeDetectorRef
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssetService } from '../../core/services/asset';
 
 @Component({
   selector: 'app-asset-details',
-  standalone: false, // REQUIRED
+  standalone: false,
   templateUrl: './asset-details.html',
   styleUrl: './asset-details.scss',
 })
@@ -15,19 +15,26 @@ export class AssetDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private assetService: AssetService,
     private router: Router,
+    private cdr: ChangeDetectorRef, // 2. Inject it here
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.assetService.getAssets().subscribe((assets) => {
-        // We find the asset by ID
-        this.asset = assets.find((a: any) => a.id === Number(id));
 
-        if (!this.asset) {
-          console.error('Asset not found in database!');
-          // Don't redirect yet, let's see the error
-        }
+    if (id) {
+      this.assetService.getAssetById(Number(id)).subscribe({
+        next: (data) => {
+          this.asset = data;
+          console.log('Asset Loaded Successfully:', data);
+
+          // 3. This is the fix: Manually tell Angular to update the screen
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('API Error:', err);
+          alert('Asset not found.');
+          this.router.navigate(['/home']);
+        },
       });
     }
   }

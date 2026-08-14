@@ -1,24 +1,79 @@
-<div style="padding: 30px;">
-  <button mat-stroked-button (click)="goBack()">
+<div class="details-container" style="padding: 30px; background-color: #f4f6f9; min-height: 100vh;">
+  
+  <!-- Back Button -->
+  <button mat-stroked-button color="primary" (click)="goBack()" style="margin-bottom: 20px;">
     <mat-icon>arrow_back</mat-icon> Back to Dashboard
   </button>
 
-  <mat-card *ngIf="asset" style="margin-top: 20px; max-width: 600px;">
-    <mat-card-header>
-      <mat-card-title>{{ asset.name }}</mat-card-title>
-      <mat-card-subtitle>Tag: {{ asset.assetTag }}</mat-card-subtitle>
-    </mat-card-header>
+  <div *ngIf="asset" style="display: flex; flex-direction: column; gap: 20px;">
     
-    <mat-card-content style="padding: 20px;">
-      <p><strong>Status:</strong> {{ asset.status }}</p>
-      <p><strong>Category:</strong> {{ asset.categoryName }}</p>
-      <p><strong>Department:</strong> {{ asset.organizationUnitName }}</p>
-      <p><strong>Description:</strong> {{ asset.description || 'No description provided' }}</p>
-    </mat-card-content>
-  </mat-card>
+    <!-- Main Asset Card -->
+    <mat-card style="padding: 0; border-radius: 12px; overflow: hidden;">
+      <div style="background-color: #3f51b5; color: white; padding: 20px;">
+        <h2 style="margin: 0; font-size: 24px;">{{ asset.name }}</h2>
+        <span style="opacity: 0.8;">Asset Tag: <strong>{{ asset.assetTag }}</strong></span>
+      </div>
 
-  <div *ngIf="!asset" style="margin-top: 20px;">
-    <mat-spinner *ngIf="!asset"></mat-spinner>
-    <p>Loading asset details...</p>
+      <mat-card-content style="padding: 30px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          
+          <div>
+            <p style="color: gray; margin-bottom: 4px;">Classification</p>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <mat-icon color="primary">category</mat-icon>
+              <strong>{{ asset.categoryName }}</strong>
+            </div>
+          </div>
+
+          <div>
+            <p style="color: gray; margin-bottom: 4px;">Current Status</p>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <mat-icon [style.color]="asset.status === 'Available' ? 'green' : 'orange'">info</mat-icon>
+              <strong>{{ asset.status }}</strong>
+            </div>
+          </div>
+
+          <div>
+            <p style="color: gray; margin-bottom: 4px;">Ownership / Location</p>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <mat-icon color="accent">business</mat-icon>
+              <strong>{{ asset.organizationUnitName }}</strong>
+            </div>
+          </div>
+
+          <div>
+            <p style="color: gray; margin-bottom: 4px;">Registered On</p>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <mat-icon>calendar_today</mat-icon>
+              <strong>{{ asset.createdAt | date:'mediumDate' }}</strong>
+            </div>
+          </div>
+
+        </div>
+
+        <mat-divider style="margin: 25px 0;"></mat-divider>
+
+        <div>
+          <h3>Description</h3>
+          <p style="color: #444; line-height: 1.6;">
+            {{ asset.description || 'No description provided for this asset.' }}
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Documents Card Placeholder (We will build this in the next specific task) -->
+    <mat-card style="padding: 24px; border-radius: 12px;">
+       <h3>Asset Documents</h3>
+       <p style="color: gray;">Document list will appear here after the next task.</p>
+    </mat-card>
+
   </div>
+
+  <!-- Loading State -->
+  <div *ngIf="!asset" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 100px;">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p style="margin-top: 15px; color: gray;">Fetching asset details...</p>
+  </div>
+
 </div>

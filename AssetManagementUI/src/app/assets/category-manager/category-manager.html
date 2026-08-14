@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Manage Asset Categories</h2>
+
+<mat-dialog-content style="min-width: 400px;">
+  <!-- Add New Section -->
+  <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
+    <mat-form-field appearance="outline" style="flex: 1;">
+      <mat-label>New Category Name</mat-label>
+      <input matInput [(ngModel)]="newCategoryName" placeholder="e.g. Vehicles">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="addCategory()" [disabled]="!newCategoryName">
+      ADD
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- List Section -->
+  <div style="margin-top: 15px; max-height: 300px; overflow-y: auto;">
+    <div *ngFor="let cat of categories" 
+         style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee;">
+      <span>{{ cat.name }}</span>
+      <button mat-icon-button color="warn" (click)="deleteCategory(cat.id)">
+        <mat-icon>delete_outline</mat-icon>
+      </button>
+    </div>
+    
+    <div *ngIf="categories.length === 0" style="text-align: center; padding: 20px; color: gray;">
+      No categories found.
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">CLOSE</button>
+</mat-dialog-actions>
