@@ -11,9 +11,7 @@
 
     <div class="user-section">
       <!-- Only Administrator can see User Management -->
-      <button *ngIf="userRole === 'Administrator'" mat-button (click)="manageUsers()" style="color: white; margin-right: 10px;">
-        <mat-icon>people</mat-icon> USERS
-      </button>
+      
 
       <div class="user-info">
         <mat-icon>account_circle</mat-icon>
@@ -22,6 +20,9 @@
           <strong>{{ userName }}</strong>
         </div>
       </div>
+      <button *ngIf="userRole === 'Administrator'" mat-button (click)="manageUsers()" style="color: white; margin-right: 10px;">
+        <mat-icon>people</mat-icon> USERS
+      </button>
 
       <button mat-stroked-button class="logout-button" (click)="onLogout()">
         <mat-icon>logout</mat-icon> Logout
