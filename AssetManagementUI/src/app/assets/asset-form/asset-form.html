@@ -1,40 +1,57 @@
-<h2 mat-dialog-title>Register New Asset</h2>
-<mat-dialog-content [formGroup]="assetForm" style="display: flex; flex-direction: column; gap: 15px; min-width: 400px; padding-top: 10px;">
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Asset' : 'Register New Asset' }}</h2>
+
+<mat-dialog-content [formGroup]="assetForm" style="display: flex; flex-direction: column; gap: 15px; min-width: 450px; padding-top: 15px;">
   
-  <mat-form-field appearance="outline">
-    <mat-label>Asset Name</mat-label>
-    <input matInput formControlName="name" placeholder="e.g. Dell Latitude 5420">
-  </mat-form-field>
+  <div style="display: flex; gap: 10px;">
+    <mat-form-field appearance="outline" style="flex: 2;">
+        <mat-label>Asset Name</mat-label>
+        <input matInput formControlName="name">
+    </mat-form-field>
+    <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>Asset Tag</mat-label>
+        <input matInput formControlName="assetTag">
+    </mat-form-field>
+  </div>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Asset Tag / Serial</mat-label>
-    <input matInput formControlName="assetTag" placeholder="e.g. AST-001">
-  </mat-form-field>
+  <div style="display: flex; gap: 10px;">
+    <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="categoryId">
+            <mat-option *ngFor="let cat of categories" [value]="cat.id">{{cat.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Category</mat-label>
-    <mat-select formControlName="categoryId">
-      <mat-option *ngFor="let cat of categories" [value]="cat.id">{{cat.name}}</mat-option>
-    </mat-select>
-  </mat-form-field>
+    <!-- NEW: ASSET STATUS DROPDOWN -->
+    <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>Asset Status</mat-label>
+        <mat-select formControlName="status">
+            <mat-option value="Available">Available</mat-option>
+            <mat-option value="Assigned">Assigned</mat-option>
+            <mat-option value="In Use">In Use</mat-option>
+            <mat-option value="Under Repair">Under Repair</mat-option>
+            <mat-option value="Broken">Broken</mat-option>
+            <mat-option value="Disposed">Disposed</mat-option>
+        </mat-select>
+    </mat-form-field>
+  </div>
 
   <mat-form-field appearance="outline">
     <mat-label>Assign to Department</mat-label>
     <mat-select formControlName="organizationUnitId">
-      <mat-option *ngFor="let dept of departments" [value]="dept.id">
-        {{dept.name}}
-      </mat-option>
+      <mat-option *ngFor="let dept of departments" [value]="dept.id">{{dept.name}}</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>Description</mat-label>
-    <textarea matInput formControlName="description"></textarea>
+    <textarea matInput formControlName="description" rows="3"></textarea>
   </mat-form-field>
 
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="assetForm.invalid">SAVE ASSET</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="assetForm.invalid">
+    {{ isEditMode ? 'UPDATE ASSET' : 'SAVE ASSET' }}
+  </button>
 </mat-dialog-actions>

@@ -47,4 +47,7 @@ export class AssetService {
       headers: new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`),
     });
   }
+  updateAsset(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, data, { headers: this.getHeaders() });
+  }
 }

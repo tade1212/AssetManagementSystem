@@ -13,6 +13,8 @@ import { CategoryService } from '../core/services/category';
 import { OrganizationForm } from '../organization/organization-form/organization-form';
 import { AssetForm } from '../assets/asset-form/asset-form';
 import { CategoryManagerComponent } from '../assets/category-manager/category-manager';
+import { UserManagerComponent } from '../auth/user-manager/user-manager';
+
 
 interface OrganizationNode {
   id: number;
@@ -24,8 +26,11 @@ interface Asset {
   assetTag: string;
   name: string;
   categoryName: string;
+  categoryId: number;
   organizationUnitName: string;
+  organizationUnitId: number;
   status: string;
+  description?: string;
 }
 
 @Component({
@@ -35,7 +40,11 @@ interface Asset {
   styleUrl: './home.scss',
 })
 export class HomeComponent implements OnInit {
+  allAssets: Asset[] = []; // To keep the original list
+  filteredAssets: Asset[] = []; // This is what the table shows
+  selectedUnitName: string = 'All Departments';
   userName: string | null = null;
+  userRole: string | null = null;
   assets: Asset[] = [];
   displayedColumns: string[] = [
     'assetTag',
@@ -58,6 +67,7 @@ export class HomeComponent implements OnInit {
     private router: Router,
   ) {
     this.userName = localStorage.getItem('fullName');
+    this.userRole = localStorage.getItem('role');
   }
 
   ngOnInit(): void {
@@ -71,7 +81,7 @@ export class HomeComponent implements OnInit {
     this.orgService.getHierarchy().subscribe({
       next: (data) => {
         this.dataSource.data = data;
-        this.cdr.detectChanges(); // Fix for UI timing
+        this.cdr.detectChanges();
       },
       error: (error) => console.error('Tree load error:', error),
     });
@@ -80,11 +90,50 @@ export class HomeComponent implements OnInit {
   loadAssets(): void {
     this.assetService.getAssets().subscribe({
       next: (data) => {
-        this.assets = data;
-        this.cdr.detectChanges(); // Fix for UI timing
+        this.allAssets = data; // Store original
+        this.filteredAssets = data; // Default to show all
+        this.cdr.detectChanges();
       },
       error: (error) => console.error('Asset load error:', error),
     });
+  }
+
+  // 1. Helper to get all IDs in a branch (e.g., IT + Software Team + Infrastructure)
+  private getAllUnitIds(node: OrganizationNode): number[] {
+    let ids = [node.id];
+    if (node.children) {
+      node.children.forEach((child) => {
+        ids = ids.concat(this.getAllUnitIds(child));
+      });
+    }
+    return ids;
+  }
+
+  // 2. Updated Filter Function
+  filterByUnit(node: OrganizationNode) {
+    console.log('Filtering by Node:', node);
+    this.selectedUnitName = node.name;
+
+    const targetUnitIds = this.getAllUnitIds(node);
+
+    // Safety check: Handles both lowercase 'organizationUnitId' and PascalCase 'OrganizationUnitId'
+    this.filteredAssets = this.allAssets.filter((asset: any) => {
+      const unitId = asset.organizationUnitId || asset.OrganizationUnitId;
+      return targetUnitIds.includes(unitId);
+    });
+
+    this.cdr.detectChanges();
+    console.log(
+      `Filter results: Found ${this.filteredAssets.length} assets for IDs:`,
+      targetUnitIds,
+    );
+  }
+
+  // 3. Reset function
+  clearFilter() {
+    this.selectedUnitName = 'All Departments';
+    this.filteredAssets = [...this.allAssets]; // Reset to full list
+    this.cdr.detectChanges();
   }
 
   addUnit(node: OrganizationNode) {
@@ -92,7 +141,6 @@ export class HomeComponent implements OnInit {
       width: '400px',
       data: { parentName: node.name },
     });
-
     dialogRef.afterClosed().subscribe((newName) => {
       if (newName && node) {
         this.orgService.createUnitAsync(newName, node.id).subscribe(() => {
@@ -102,31 +150,14 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  viewAsset(id: number) {
-    this.router.navigate(['/assets', id]);
-  }
-
-  deleteAsset(id: number) {
-    if (confirm('Are you sure you want to delete this asset?')) {
-      this.assetService.deleteAsset(id).subscribe(() => this.loadAssets());
-    }
-  }
-
   deleteUnit(id: number) {
-    if (confirm('Delete this department? This will fail if it has assets.')) {
-      this.orgService.deleteUnit(id).subscribe({
-        next: () => this.loadTree(),
-        error: (err) => alert('Cannot delete: Unit is not empty.'),
-      });
+    if (confirm('Delete this department?')) {
+      this.orgService.deleteUnit(id).subscribe(() => this.loadTree());
     }
-  }
-
-  manageCategories() {
-    this.dialog.open(CategoryManagerComponent, { width: '500px' });
   }
 
   openAddAssetForm() {
-    const dialogRef = this.dialog.open(AssetForm, { width: '500px' });
+    const dialogRef = this.dialog.open(AssetForm, { width: '550px', data: null });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.assetService.createAsset(result).subscribe(() => this.loadAssets());
@@ -134,8 +165,35 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  editAsset(asset: Asset) {
+    const dialogRef = this.dialog.open(AssetForm, { width: '550px', data: asset });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.assetService.updateAsset(asset.id, result).subscribe(() => this.loadAssets());
+      }
+    });
+  }
+
+  viewAsset(id: number) {
+    this.router.navigate(['/assets', id]);
+  }
+
+  deleteAsset(id: number) {
+    if (confirm('Delete this asset?')) {
+      this.assetService.deleteAsset(id).subscribe(() => this.loadAssets());
+    }
+  }
+
+  manageCategories() {
+    this.dialog.open(CategoryManagerComponent, { width: '500px' });
+  }
+
+  manageUsers() {
+    this.router.navigate(['/users']);
+  }
+
   onLogout(): void {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
-}
+} // <--- Class MUST end here

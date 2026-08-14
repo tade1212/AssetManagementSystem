@@ -1,79 +1,120 @@
 <div class="details-container" style="padding: 30px; background-color: #f4f6f9; min-height: 100vh;">
   
-  <!-- Back Button -->
+  <!-- BACK BUTTON -->
   <button mat-stroked-button color="primary" (click)="goBack()" style="margin-bottom: 20px;">
     <mat-icon>arrow_back</mat-icon> Back to Dashboard
   </button>
 
-  <div *ngIf="asset" style="display: flex; flex-direction: column; gap: 20px;">
+  <div *ngIf="asset" style="display: flex; flex-direction: column; gap: 25px;">
     
-    <!-- Main Asset Card -->
-    <mat-card style="padding: 0; border-radius: 12px; overflow: hidden;">
-      <div style="background-color: #3f51b5; color: white; padding: 20px;">
-        <h2 style="margin: 0; font-size: 24px;">{{ asset.name }}</h2>
-        <span style="opacity: 0.8;">Asset Tag: <strong>{{ asset.assetTag }}</strong></span>
+    <!-- ASSET INFORMATION CARD -->
+    <mat-card style="padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+      <div style="background-color: #3f51b5; color: white; padding: 25px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="margin: 0; font-size: 26px;">{{ asset.name }}</h2>
+          <span style="opacity: 0.8;">Asset Tag: <strong>{{ asset.assetTag }}</strong></span>
+        </div>
+        
+        <!-- Toggle Documents -->
+        <button mat-flat-button color="accent" (click)="toggleDocuments()">
+          <mat-icon>{{ showDocuments ? 'visibility_off' : 'attachment' }}</mat-icon>
+          {{ showDocuments ? 'HIDE DOCUMENTS' : 'VIEW DOCUMENTS' }}
+        </button>
       </div>
 
       <mat-card-content style="padding: 30px;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
           <div>
-            <p style="color: gray; margin-bottom: 4px;">Classification</p>
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <p style="color: gray; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Classification</p>
+            <div style="display: flex; align-items: center; gap: 10px;">
               <mat-icon color="primary">category</mat-icon>
               <strong>{{ asset.categoryName }}</strong>
             </div>
           </div>
-
           <div>
-            <p style="color: gray; margin-bottom: 4px;">Current Status</p>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <mat-icon [style.color]="asset.status === 'Available' ? 'green' : 'orange'">info</mat-icon>
-              <strong>{{ asset.status }}</strong>
-            </div>
-          </div>
-
-          <div>
-            <p style="color: gray; margin-bottom: 4px;">Ownership / Location</p>
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <p style="color: gray; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Department</p>
+            <div style="display: flex; align-items: center; gap: 10px;">
               <mat-icon color="accent">business</mat-icon>
               <strong>{{ asset.organizationUnitName }}</strong>
             </div>
           </div>
-
           <div>
-            <p style="color: gray; margin-bottom: 4px;">Registered On</p>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <mat-icon>calendar_today</mat-icon>
-              <strong>{{ asset.createdAt | date:'mediumDate' }}</strong>
+            <p style="color: gray; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Status</p>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <mat-icon [style.color]="asset.status === 'Available' ? 'green' : 'orange'">info</mat-icon>
+              <strong>{{ asset.status }}</strong>
             </div>
           </div>
-
+          <div>
+            <p style="color: gray; margin-bottom: 4px; font-size: 11px; text-transform: uppercase;">Registered On</p>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <mat-icon>calendar_today</mat-icon>
+              <strong>{{ asset.createdAt | date:'longDate' }}</strong>
+            </div>
+          </div>
         </div>
 
-        <mat-divider style="margin: 25px 0;"></mat-divider>
+        <mat-divider style="margin: 30px 0;"></mat-divider>
 
         <div>
-          <h3>Description</h3>
-          <p style="color: #444; line-height: 1.6;">
-            {{ asset.description || 'No description provided for this asset.' }}
+          <h3 style="color: #3f51b5;">Description</h3>
+          <p style="color: #444; line-height: 1.6; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+            {{ asset.description || 'No description provided.' }}
           </p>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <!-- Documents Card Placeholder (We will build this in the next specific task) -->
-    <mat-card style="padding: 24px; border-radius: 12px;">
-       <h3>Asset Documents</h3>
-       <p style="color: gray;">Document list will appear here after the next task.</p>
+    <!-- DOCUMENTS SECTION (Toggleable) -->
+    <mat-card *ngIf="showDocuments" style="padding: 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); animation: slideIn 0.3s ease-out;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+          <mat-icon color="primary">description</mat-icon> Files & Documents
+        </h3>
+        
+        <!-- Only Admin or Manager can see Upload -->
+        <div *ngIf="userRole === 'Administrator' || userRole === 'Manager'">
+          <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
+          <button mat-raised-button color="primary" (click)="fileInput.click()">
+            <mat-icon>upload_file</mat-icon> UPLOAD NEW
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirm Selection -->
+      <div *ngIf="selectedFile" style="background: #e8eaf6; padding: 15px; margin-bottom: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span>Ready: <strong>{{ selectedFile.name }}</strong></span>
+        <button mat-flat-button color="accent" (click)="uploadDocument()">CONFIRM UPLOAD</button>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div style="margin-top: 15px;">
+        <div *ngFor="let doc of asset.assetDocuments" 
+             style="display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee;">
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <mat-icon color="primary">insert_drive_file</mat-icon>
+            <div>
+              <div style="font-weight: 500;">{{ doc.fileName }}</div>
+              <div style="font-size: 11px; color: gray;">Uploaded: {{ doc.uploadedAt | date:'short' }}</div>
+            </div>
+          </div>
+          <a mat-icon-button color="primary" [href]="'http://localhost:5000' + doc.filePath" target="_blank">
+            <mat-icon>open_in_new</mat-icon>
+          </a>
+        </div>
+
+        <div *ngIf="!asset.assetDocuments || asset.assetDocuments.length === 0" style="text-align: center; padding: 30px; color: #bbb;">
+          <p>No documents found for this asset.</p>
+        </div>
+      </div>
     </mat-card>
 
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="!asset" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 100px;">
+  <!-- LOADING STATE -->
+  <div *ngIf="!asset" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 150px;">
     <mat-spinner diameter="50"></mat-spinner>
-    <p style="margin-top: 15px; color: gray;">Fetching asset details...</p>
+    <p style="margin-top: 15px; color: gray;">Fetching secure data...</p>
   </div>
-
 </div>

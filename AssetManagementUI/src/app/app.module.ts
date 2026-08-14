@@ -27,7 +27,9 @@ import { HomeComponent } from './home/home';
 import { OrganizationForm } from './organization/organization-form/organization-form';
 import { AssetForm } from './assets/asset-form/asset-form';
 import { AssetDetailsComponent } from './assets/asset-details/asset-details';
-import { CategoryManagerComponent } from './assets/category-manager/category-manager'; // Added
+import { CategoryManagerComponent } from './assets/category-manager/category-manager';
+import { UserManagerComponent } from './auth/user-manager/user-manager'; // Fixed path
+
 
 @NgModule({
   declarations: [
@@ -37,7 +39,8 @@ import { CategoryManagerComponent } from './assets/category-manager/category-man
     OrganizationForm,
     AssetForm,
     AssetDetailsComponent,
-    CategoryManagerComponent, // Registered
+    CategoryManagerComponent,
+    UserManagerComponent,
   ],
   imports: [
     BrowserModule,

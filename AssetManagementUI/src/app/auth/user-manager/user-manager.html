@@ -1,0 +1,81 @@
+<div style="padding: 30px; background: #f4f6f9; min-height: 100vh;">
+  
+  <button mat-stroked-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon> Dashboard
+  </button>
+
+  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-top: 20px;">
+    
+    <!-- LEFT: THE FORM -->
+    <mat-card style="padding: 25px; border-radius: 12px; height: fit-content;">
+      <h2 style="margin-bottom: 20px;">{{ isEditMode ? 'Edit User' : 'Add New User' }}</h2>
+      
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <mat-form-field appearance="outline">
+          <mat-label>Full Name</mat-label>
+          <input matInput [(ngModel)]="userForm.fullName">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email Address</mat-label>
+          <input matInput [(ngModel)]="userForm.email">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="!isEditMode">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" [(ngModel)]="password">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Role</mat-label>
+          <mat-select [(ngModel)]="userForm.roleId">
+            <mat-option [value]="1">Administrator</mat-option>
+            <mat-option [value]="2">Manager</mat-option>
+            <mat-option [value]="3">Viewer</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" size="large" (click)="saveUser()">
+          {{ isEditMode ? 'UPDATE USER' : 'CREATE USER' }}
+        </button>
+        <button *ngIf="isEditMode" mat-button (click)="resetForm()">Cancel Edit</button>
+      </div>
+    </mat-card>
+
+    <!-- RIGHT: THE LIST & SEARCH -->
+    <mat-card style="padding: 25px; border-radius: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>System Users</h2>
+        
+        <!-- SEARCH BAR -->
+        <mat-form-field appearance="outline" style="width: 300px;">
+          <mat-label>Search users...</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (input)="applyFilter()">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div style="max-height: 500px; overflow-y: auto;">
+        <div *ngFor="let user of filteredUsers" 
+             style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee;">
+          <div>
+            <div style="font-weight: 500;">{{ user.fullName }}</div>
+            <div style="font-size: 12px; color: gray;">{{ user.email }} • <strong>{{ user.roleName }}</strong></div>
+          </div>
+          <div style="display: flex; gap: 5px;">
+            <button mat-icon-button color="accent" (click)="resetPassword(user)" title="Reset Password">
+    <mat-icon>vpn_key</mat-icon>
+  </button>
+            <button mat-icon-button color="primary" (click)="editUser(user)"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="deleteUser(user.id)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+
+        <div *ngIf="filteredUsers.length === 0" style="text-align: center; padding: 40px; color: gray;">
+           No users found matching your search.
+        </div>
+      </div>
+    </mat-card>
+
+  </div>
+</div>

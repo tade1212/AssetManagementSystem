@@ -2,9 +2,9 @@
 .dashboard {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100vh; // Fill the whole browser height
   background-color: #f4f6f9;
-}
+
 
 // ================= HEADER =================
 .dashboard-header {
@@ -15,6 +15,7 @@
   color: white;
   padding: 15px 30px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+
 
   .brand {
     display: flex;
@@ -117,10 +118,11 @@
 
 // ================= MAIN CONTENT (TWO COLUMNS) =================
 .dashboard-content {
+  flex: 1; // This is the "Magic" line
   display: flex;
   gap: 30px;
   padding: 20px 30px 30px 30px;
-  flex: 1;
+}
 
   .organization-card {
     flex: 1; // Left side is smaller (1 part)
@@ -339,4 +341,32 @@
 .header-actions {
   display: flex;
   gap: 8px;
+}
+// Update existing .dashboard-header
+.dashboard-header {
+  position: sticky; 
+  top: 0;
+  z-index: 1000; // Ensures it stays above all cards
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #3f51b5;
+  color: white;
+  padding: 15px 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+// Add this at the bottom
+.dashboard-footer {
+  background: white;
+  color: #030303;
+  text-align: center;
+  padding: 7.5px;
+  border-top: 1px solid #ddd;
+  font-size: 13px;
+  width: 100%;
+}
+.node-name:hover {
+  color: #3f51b5;
+  text-decoration: underline;
 }
